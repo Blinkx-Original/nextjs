@@ -5,13 +5,22 @@ import { faker } from '@faker-js/faker';
 
 dotenv.config();
 
-const { TIDB_USER, TIDB_PASSWORD, TIDB_HOST, TIDB_PORT, TIDB_DB_NAME = 'bookshop', DATABASE_URL } = process.env;
+const {
+  TIDB_USER,
+  TIDB_PASSWORD,
+  TIDB_HOST,
+  TIDB_PORT,
+  TIDB_DATABASE,
+  TIDB_DB_NAME = 'bookshop',
+  DATABASE_URL,
+} = process.env;
+const databaseName = TIDB_DATABASE ?? TIDB_DB_NAME ?? 'bookshop';
 // Notice: When using TiDb Cloud Serverless Tier, you **MUST** set the following flags to enable tls connection.
 const SSL_FLAGS = 'pool_timeout=60&sslaccept=accept_invalid_certs';
 // TODO: When TiDB Cloud support return DATABASE_URL, we can remove it.
 const databaseURL = DATABASE_URL
     ? `${DATABASE_URL}?${SSL_FLAGS}`
-    : `mysql://${TIDB_USER}:${TIDB_PASSWORD}@${TIDB_HOST}:${TIDB_PORT}/${TIDB_DB_NAME}?${SSL_FLAGS}`;
+    : `mysql://${TIDB_USER}:${TIDB_PASSWORD}@${TIDB_HOST}:${TIDB_PORT}/${databaseName}?${SSL_FLAGS}`;
 
 const setup = async () => {
   let client;
