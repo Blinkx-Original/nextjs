@@ -114,7 +114,7 @@ Open the browser and visit `http://<ip>:3000`.
 
 ## 📖 Development Reference
 
-### Prisma:
+### Prisma
 
 [Prisma Deployment Guide](https://www.prisma.io/docs/guides/deployment/deploying-to-vercel)
 
