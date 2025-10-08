@@ -12,7 +12,7 @@
     "prisma:generate": "prisma generate",
     "setup": "NODE_OPTIONS='--experimental-json-modules' node ./scripts/setup.mjs",
     "start": "next start",
-    "vercel-build": "export DATABASE_URL=$(node ./scripts/env.mjs) && yarn run prisma:deploy && yarn run setup && yarn run build"
+    "vercel-build": "export DATABASE_URL=$(node ./scripts/env.mjs) && yarn run prisma:deploy && yarn run prisma:generate && yarn run setup && yarn run build"
   },
   "dependencies": {
     "@faker-js/faker": "^7.6.0",

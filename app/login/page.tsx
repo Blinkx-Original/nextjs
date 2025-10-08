@@ -1,20 +1,34 @@
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+"use client";
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   async function handleLogin() {
-    'use server';
+    try {
+      setIsSubmitting(true);
+      setError(null);
 
-    cookies().set('admin', '1', {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: true,
-      path: '/',
-    });
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+      });
 
-    redirect('/admin');
+      if (!response.ok) {
+        throw new Error('Unexpected response while logging in');
+      }
+
+      router.push('/admin');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to log in');
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -27,14 +41,26 @@ export default function LoginPage() {
             Press login to enter the connectivity dashboard.
           </p>
         </div>
-        <form action={handleLogin} className="flex flex-col gap-6">
+        <form
+          className="flex flex-col gap-6"
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (!isSubmitting) {
+              void handleLogin();
+            }
+          }}
+        >
           <button
             type="submit"
-            className="group relative flex items-center justify-center rounded-full px-6 py-3 text-base font-medium text-white transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+            className="group relative flex items-center justify-center rounded-full px-6 py-3 text-base font-medium text-white transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 disabled:cursor-not-allowed disabled:opacity-80"
+            disabled={isSubmitting}
           >
             <span className="absolute inset-0 rounded-full bg-gradient-to-r from-[#0070f3] via-[#4f8cff] to-[#3291ff] shadow-[0_20px_45px_rgba(79,140,255,0.35)] transition group-hover:brightness-110" />
-            <span className="relative">Login</span>
+            <span className="relative">{isSubmitting ? 'Logging in…' : 'Login'}</span>
           </button>
+          {error ? (
+            <p className="text-center text-sm text-red-500">{error}</p>
+          ) : null}
         </form>
       </div>
     </main>
